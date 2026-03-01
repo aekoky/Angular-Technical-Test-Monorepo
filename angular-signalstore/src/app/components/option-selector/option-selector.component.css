@@ -15,8 +15,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: #1976d2;
-    margin: 0 0 10px;
-    letter-spacing: 0;
+    margin: 0 0 12px;
 }
 
 .option-group__grid {
@@ -25,37 +24,70 @@
     gap: 8px;
 }
 
+/* ── Keyboard key style ── */
 .option-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 52px;
-    height: 48px;
-    background: #f2f2f2;
-    border: 1px solid #dcdcdc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
+    min-width: 48px;
+    height: 44px;
+    padding: 0 10px;
+
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.88rem;
     font-weight: 600;
     color: #1a1a1a;
-    font-family: 'Inter', system-ui, sans-serif;
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+    background: linear-gradient(to bottom, #ffffff 0%, #e8e8e8 100%);
+    border: 1px solid #b0b0b0;
+    border-radius: 6px;
+    cursor: pointer;
+
+    /* raised 3-D shadow — bottom edge acts as the key base */
+    box-shadow:
+        0 1px 0 #b0b0b0,
+        0 3px 0 #999999,
+        0 4px 6px rgba(0, 0, 0, 0.18);
+
+    position: relative;
+    top: 0;
+
+    transition: box-shadow 0.06s ease, top 0.06s ease, background 0.1s;
+    user-select: none;
 }
 
 .option-btn:hover {
-    background: #e8e8e8;
-    border-color: #c0c0c0;
+    background: linear-gradient(to bottom, #f5f5f5 0%, #dcdcdc 100%);
 }
 
+.option-btn:active {
+    top: 3px;
+    box-shadow:
+        0 0 0 #b0b0b0,
+        0 1px 0 #999999,
+        0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Selected key ── */
 .option-btn--selected {
-    background: #e91e63;
-    border-color: #e91e63;
+    background: linear-gradient(to bottom, #f06292 0%, #e91e63 100%);
+    border-color: #ad1457;
     color: #ffffff;
-    box-shadow: 0 2px 6px rgba(233, 30, 99, 0.35);
+
+    box-shadow:
+        0 1px 0 #ad1457,
+        0 3px 0 #880e4f,
+        0 4px 6px rgba(233, 30, 99, 0.35);
 }
 
 .option-btn--selected:hover {
-    background: #c2185b;
-    border-color: #c2185b;
+    background: linear-gradient(to bottom, #e91e63 0%, #c2185b 100%);
+}
+
+.option-btn--selected:active {
+    top: 3px;
+    box-shadow:
+        0 0 0 #880e4f,
+        0 1px 0 #880e4f,
+        0 1px 3px rgba(233, 30, 99, 0.2);
 }

@@ -1,59 +1,81 @@
-# AngularSignalstore
+# angular-signalstore
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.5.
+Angular 17+ application implementing the **Box Selector** feature using **NgRx SignalStore** (`@ngrx/signals`).
 
-## Development server
-
-To start a local development server, run:
+## Running the App
 
 ```bash
-ng serve
+npm install
+npx ng serve          # http://localhost:4200
+npx ng test           # unit tests (Karma/Jasmine)
+npx ng build          # production build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## State Architecture
 
-## Code scaffolding
+All state lives in the singleton `AppStore` — components are purely presentational.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+AppStore (signalStore, providedIn: 'root')
+│
+├── withState<AppState>
+│     ├── options[]       — static jump-code catalogue
+│     ├── selections[]    — { boxId, optionId } pairs
+│     └── activeBoxId     — currently focused box
+│
+├── withComputed
+│     ├── total           — Σ option values (derived, never stored)
+│     └── selectionMap    — Record<boxId, optionId> for O(1) lookup
+│
+├── withMethods
+│     ├── select(boxId, optionId)  — assign + advance active box
+│     ├── setActiveBox(boxId)      — change focused box
+│     ├── clear()                  — reset all
+│     └── loadFromStorage()        — rehydrate from localStorage
+│
+└── withHooks
+      └── onInit → loadFromStorage()
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Persistence
 
-```bash
-ng generate --help
+`PersistenceService` reads/writes `localStorage` key `ng-signalstore-state`. State is rehydrated synchronously inside `onInit` — no flicker on load.
+
+## Project Structure
+
+```
+src/app/
+├── data/
+│   └── options.data.ts          # Static jump-code definitions
+├── models/
+│   └── option.model.ts          # Option, Selection, AppState interfaces
+├── services/
+│   └── persistence.service.ts  # localStorage adapter
+├── store/
+│   └── app.store.ts            # NgRx SignalStore definition
+└── components/
+    ├── box/                     # Single selection box (computed signals)
+    ├── boxes-container/         # 10-box horizontal row
+    ├── option-selector/         # Grouped options panel (3 categories)
+    ├── total-display/           # Running total label
+    └── clear-button/            # Trash icon reset button
 ```
 
-## Building
+## Key Patterns
 
-To build the project run:
+- **`signalStore`** — declarative, composable store built with `withState`, `withComputed`, `withMethods`, `withHooks`
+- **`computed` signals** in components — `isActive`, `isFilled`, `label`, `score`, category filters; all re-evaluate automatically when store state changes
+- **`selectionMap`** — `Record<boxId, optionId>` computed signal gives O(1) box lookup vs O(n) `.find()` on every render
+- **`ChangeDetectionStrategy.OnPush`** on every component — change detection triggered only when signal values change
+- **No `async` pipe** — signals are synchronous, templates read them directly with `()`
 
-```bash
-ng build
-```
+## RxJS vs SignalStore Comparison
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Aspect | angular-rxjs | angular-signalstore |
+|---|---|---|
+| State primitive | `Observable` | `Signal` |
+| Derived state | RxJS `map` + `distinctUntilChanged` | `computed()` |
+| Template binding | `async` pipe | Direct signal call `()` |
+| State updates | `Subject.next(action)` | `patchState(store, {...})` |
+| Component subscription | `combineLatest` ViewModel | `computed` per property |
+| Boilerplate | Medium (reducer + action types) | Low (withMethods) |

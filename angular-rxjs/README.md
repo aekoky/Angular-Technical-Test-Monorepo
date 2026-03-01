@@ -1,59 +1,71 @@
-# AngularRxjs
+# angular-rxjs
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.5.
+Angular 17+ application implementing the **Box Selector** feature using **RxJS Observables** with a reducer-style `scan` pipeline.
 
-## Development server
-
-To start a local development server, run:
+## Running the App
 
 ```bash
-ng serve
+npm install
+npx ng serve          # http://localhost:4200
+npx ng test           # unit tests (Karma/Jasmine)
+npx ng build          # production build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## State Architecture
 
-## Code scaffolding
+State is managed entirely inside `BoxService` — no state is held in components.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+User action
+    │
+    ▼
+BoxService.actions$ (Subject<Action>)
+    │
+    ▼  startWith(INIT) → scan(reducer, initialState)
+state$ (Observable<AppState>)  ──tap──▶  PersistenceService (localStorage)
+    │
+    ├── options$         (distinctUntilChanged)
+    ├── selections$      (distinctUntilChanged)
+    ├── activeBoxId$     (distinctUntilChanged)
+    ├── total$           (derived — never stored)
+    └── activeOptionId$(boxId)  (per-box derived stream)
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Actions (discriminated union)
 
-```bash
-ng generate --help
+| Action | Payload | Effect |
+|---|---|---|
+| `INIT` | — | Initialises state from persisted value |
+| `SELECT` | `boxId`, `optionId` | Assigns option to box, advances active box |
+| `SET_ACTIVE_BOX` | `boxId` | Changes the highlighted box |
+| `CLEAR` | — | Wipes all selections, resets to box 1 |
+
+### Persistence
+
+`PersistenceService` reads/writes `localStorage` key `ng-rxjs-state`. Only `selections` and `activeBoxId` are persisted (options are static).
+
+## Project Structure
+
+```
+src/app/
+├── data/
+│   └── options.data.ts          # Static jump-code definitions
+├── models/
+│   └── option.model.ts          # Option, Selection, AppState interfaces
+├── services/
+│   ├── box.service.ts           # Central state + reducer
+│   └── persistence.service.ts  # localStorage adapter
+└── components/
+    ├── box/                     # Single selection box
+    ├── boxes-container/         # 10-box horizontal row
+    ├── option-selector/         # Grouped options panel (3 categories)
+    ├── total-display/           # Running total label
+    └── clear-button/            # Trash icon reset button
 ```
 
-## Building
+## Key Patterns
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **`scan` + `shareReplay(1)`** — single shared state stream; all derived streams tap from it
+- **`combineLatest`** in components — builds a ViewModel observable, consumed via `async` pipe → zero manual subscription management
+- **`ChangeDetectionStrategy.OnPush`** on every component — rendering driven purely by the async pipe
+- **`distinctUntilChanged`** on all derived streams — prevents unnecessary re-renders
