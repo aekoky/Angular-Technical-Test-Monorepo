@@ -1,18 +1,37 @@
 @if (vm$ | async; as vm) {
 <div class="option-selector">
-    <h3 class="option-selector__heading">
-        Box {{ vm.activeBoxId }} — Select an option
-    </h3>
-    <div class="option-selector__grid">
-        @for (option of vm.options; track option.id) {
-        <button type="button" class="option-item" [class.option-item--selected]="option.id === vm.selectedOptionId"
-            (click)="onSelect(option.id, vm.activeBoxId)">
-            <span class="option-item__label">{{ option.label }}</span>
-            <span class="option-item__value" [class.option-item__value--neg]="option.value < 0">
-                {{ option.value >= 0 ? '+' : '' }}{{ option.value.toFixed(2) }}
-            </span>
-        </button>
-        }
+    <div class="option-group">
+        <h3 class="option-group__title">front salto's:</h3>
+        <div class="option-group__grid">
+            @for (option of vm.frontOptions; track option.id) {
+            <button type="button" class="option-btn" [class.option-btn--selected]="option.id === vm.selectedOptionId"
+                (click)="onSelect(option.id, vm.activeBoxId)">
+                {{ option.label }}
+            </button>
+            }
+        </div>
+    </div>
+    <div class="option-group">
+        <h3 class="option-group__title">back salto's:</h3>
+        <div class="option-group__grid">
+            @for (option of vm.backOptions; track option.id) {
+            <button type="button" class="option-btn" [class.option-btn--selected]="option.id === vm.selectedOptionId"
+                (click)="onSelect(option.id, vm.activeBoxId)">
+                {{ option.label }}
+            </button>
+            }
+        </div>
+    </div>
+    <div class="option-group">
+        <h3 class="option-group__title">Other:</h3>
+        <div class="option-group__grid">
+            @for (option of vm.otherOptions; track option.id) {
+            <button type="button" class="option-btn" [class.option-btn--selected]="option.id === vm.selectedOptionId"
+                (click)="onSelect(option.id, vm.activeBoxId)">
+                {{ option.label }}
+            </button>
+            }
+        </div>
     </div>
 </div>
 }

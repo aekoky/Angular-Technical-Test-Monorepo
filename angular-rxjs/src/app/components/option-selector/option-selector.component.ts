@@ -9,9 +9,10 @@ import { BoxService } from '../../services/box.service';
 import { Option } from '../../models/option.model';
 
 interface OptionSelectorVm {
-    isVisible: boolean;
     activeBoxId: number;
-    options: Option[];
+    frontOptions: Option[];
+    backOptions: Option[];
+    otherOptions: Option[];
     selectedOptionId: string | null;
 }
 
@@ -32,9 +33,10 @@ export class OptionSelectorComponent {
         selections: this.boxService.selections$,
     }).pipe(
         map(({ activeBoxId, options, selections }) => ({
-            isVisible: true,
             activeBoxId,
-            options,
+            frontOptions: options.filter(o => o.category === 'front'),
+            backOptions: options.filter(o => o.category === 'back'),
+            otherOptions: options.filter(o => o.category === 'other'),
             selectedOptionId:
                 selections.find(s => s.boxId === activeBoxId)?.optionId ?? null,
         })),

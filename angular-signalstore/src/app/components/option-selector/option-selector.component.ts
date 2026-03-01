@@ -5,6 +5,7 @@ import {
     inject,
 } from '@angular/core';
 import { AppStore } from '../../store/app.store';
+import { Option } from '../../models/option.model';
 
 @Component({
     selector: 'app-option-selector',
@@ -18,6 +19,18 @@ export class OptionSelectorComponent {
 
     protected readonly selectedOptionId = computed(
         () => this.store.selectionMap()[this.store.activeBoxId()] ?? null,
+    );
+
+    protected readonly frontOptions = computed(() =>
+        this.store.options().filter((o: Option) => o.category === 'front'),
+    );
+
+    protected readonly backOptions = computed(() =>
+        this.store.options().filter((o: Option) => o.category === 'back'),
+    );
+
+    protected readonly otherOptions = computed(() =>
+        this.store.options().filter((o: Option) => o.category === 'other'),
     );
 
     protected onSelect(optionId: string): void {

@@ -16,21 +16,16 @@ import { ClearButtonComponent } from './components/clear-button/clear-button.com
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app">
-      <header class="app__header">
-        <h1 class="app__title">Box Selector</h1>
-        <span class="app__badge">NgRx SignalStore</span>
-      </header>
-
-      <main class="app__main">
+      <div class="top-section">
         <app-boxes-container />
-        <app-option-selector />
-      </main>
-
-      <footer class="app__footer">
-        <app-total-display />
-        <app-clear-button />
-      </footer>
+        <div class="side-card">
+          <app-clear-button />
+          <app-total-display />
+        </div>
+      </div>
+      <app-option-selector />
     </div>
   `,
+  styleUrl: './app.css',
 })
 export class App { }

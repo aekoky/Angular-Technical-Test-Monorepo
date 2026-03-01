@@ -2,6 +2,7 @@ export interface Option {
   id: string;
   label: string;
   value: number;
+  category: 'front' | 'back' | 'other';
 }
 
 export interface Selection {

@@ -1,14 +1,11 @@
 @if (vm$ | async; as vm) {
-  <button
-    type="button"
-    class="box"
-    [class.box--active]="vm.isActive"
-    [class.box--filled]="vm.isFilled"
-    (click)="onClick()"
-  >
-    <span class="box__id">{{ boxId() }}</span>
-    @if (vm.label) {
-      <span class="box__label">{{ vm.label }}</span>
-    }
-  </button>
+<button type="button" class="box" [class.box--active]="vm.isActive" [class.box--filled]="vm.isFilled"
+  (click)="onClick()">
+  @if (vm.label) {
+  <span class="box__value">{{ vm.label }}</span>
+  <span class="box__score">{{ vm.score?.toFixed(1) }}</span>
+  } @else {
+  <span class="box__placeholder">Select element</span>
+  }
+</button>
 }

@@ -14,6 +14,7 @@ interface BoxVm {
     isActive: boolean;
     isFilled: boolean;
     label: string | null;
+    score: number | null;
 }
 
 @Component({
@@ -39,13 +40,15 @@ export class BoxComponent implements OnInit {
             optionId: this.boxService.activeOptionId$(id),
             options: this.boxService.options$,
         }).pipe(
-            map(({ activeBoxId, optionId, options }) => ({
-                isActive: activeBoxId === id,
-                isFilled: optionId !== null,
-                label: optionId
-                    ? (options.find((o: Option) => o.id === optionId)?.label ?? null)
-                    : null,
-            })),
+            map(({ activeBoxId, optionId, options }) => {
+                const option = optionId ? options.find((o: Option) => o.id === optionId) : null;
+                return {
+                    isActive: activeBoxId === id,
+                    isFilled: optionId !== null,
+                    label: option?.label ?? null,
+                    score: option?.value ?? null,
+                };
+            }),
         );
     }
 
