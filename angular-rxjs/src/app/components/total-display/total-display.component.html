@@ -1,0 +1,5 @@
+<div class="total-display">
+    <span class="total-display__text">
+        Total value: {{ (boxService.total$ | async)?.toFixed(1) ?? '0.0' }}
+    </span>
+</div>

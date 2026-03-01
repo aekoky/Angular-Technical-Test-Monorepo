@@ -1,0 +1,8 @@
+<button type="button" class="box" [class.box--active]="isActive()" [class.box--filled]="isFilled()" (click)="onClick()">
+    @if (label(); as label) {
+    <span class="box__value">{{ label }}</span>
+    <span class="box__score">{{ score()?.toFixed(1) }}</span>
+    } @else {
+    <span class="box__placeholder">Select element</span>
+    }
+</button>

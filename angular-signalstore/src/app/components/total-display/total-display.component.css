@@ -1,0 +1,9 @@
+.total-display {
+    margin-top: 6px;
+}
+
+.total-display__text {
+    font-size: 11px;
+    color: #9aa0a6;
+    white-space: nowrap;
+}

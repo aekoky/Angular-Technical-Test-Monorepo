@@ -1,0 +1,26 @@
+.boxes-container {
+    display: flex;
+    flex: 1;
+    gap: 0;
+    min-width: 0;
+}
+
+.boxes-container> :first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.boxes-container> :last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+.boxes-container> :not(:first-child):not(:last-child) {
+    border-radius: 0;
+}
+
+.boxes-container>* {
+    border-right-width: 0;
+}
+
+.boxes-container> :last-child {
+    border-right-width: 1px;
+}
